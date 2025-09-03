@@ -1,5 +1,6 @@
 package com.dawitalem.loginhub.config;
 
+import com.dawitalem.loginhub.filter.JwtRequestFilter;
 import com.dawitalem.loginhub.service.AppUserDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +16,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -28,6 +30,8 @@ import java.util.List;
 public class SecurityConfig {
 
     private final AppUserDetailService appUserDetailService;
+    private final JwtRequestFilter jwtRequestFilter;
+    private final CustomAuthenticationEntityPoint customAuthenticationEntityPoint;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
@@ -38,7 +42,9 @@ public class SecurityConfig {
                                 "/reset-password", "/logout")
                         .permitAll().anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .logout(AbstractHttpConfigurer::disable);
+                .logout(AbstractHttpConfigurer::disable)
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(customAuthenticationEntityPoint));
                 return http.build();
     }
 
