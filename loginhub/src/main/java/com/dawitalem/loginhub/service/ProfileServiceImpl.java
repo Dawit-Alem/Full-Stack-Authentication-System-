@@ -20,6 +20,7 @@ public class ProfileServiceImpl implements ProfileService{
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     @Override
     public ProfileResponse createProfile(ProfileRequest request) {
@@ -63,7 +64,7 @@ public class ProfileServiceImpl implements ProfileService{
         userRepository.save(existingEntity);
 
         try{
-            // TODO: send the reset otp email
+            emailService.sendResetOtpEmail(existingEntity.getEmail(), otp);
 
         } catch(Exception ex){
             throw new RuntimeException("Unable to send email");
