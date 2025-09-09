@@ -23,7 +23,7 @@ public class EmailService {
          message.setSubject("Welcome to Our Platform");
          message.setText("Hello " + name + ",\n\nThanks for registering with us!\n\n" +
                  "Regards,\nLoginHub Team");
-
+         mailSender.send(message);
 
      }
     
